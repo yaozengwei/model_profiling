@@ -15,7 +15,7 @@ pip install torch-tb-profiler
 ```
 Please refer to https://github.com/pytorch/kineto/tree/main/tb_plugin for other alternatives.
 
-# Steps to get the benchmark results
+# Steps to get the profiling results
 ## Step 0: Clone the repo
 ```
 git clone git@github.com:yaozengwei/model_profiling.git
@@ -69,7 +69,7 @@ The labels we use include
   * "rnnt_encoder_layer_conv"
   * "rnnt_encoder_layer_feed_forward"
 
-### Step 3: Visualize Results
+## Step 3: Visualize Results
 
 The summarized result is in `conformer-k2-pruned-max-frames-30000.txt`. 
 

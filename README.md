@@ -18,7 +18,7 @@ Please refer to https://github.com/pytorch/kineto/tree/main/tb_plugin for other 
 # Steps to get the profiling results
 ## Step 0: Clone the repo
 ```
-git clone git@github.com:yaozengwei/model_profiling.git
+git clone https://github.com/yaozengwei/model_profiling.git
 ```
 ## Step 1: Generate shape information from training data (Can be skipped)
 We get the shape information for input features and targets from the subset train-clean-100 of the LibriSpeech dataset to make the benchmark results more realistic.
@@ -54,8 +54,8 @@ prof = torch.profiler.profile(
 In this experiment with wait=10, warmup=10, active=20, repeat=2, pytorch profiler will skip the first 10 iterations, 
 start warming up for 10 iterations, record the following 20 iterations. In total, the cycle repeats twice.
 
-We warp the code for each module we want to record in separate labelled context managers using `profiler.record_function("label")`. 
-You can modify it manually in the codes such as `model.py` and `conformer.py`. 
+We wrap the code for each module we want to record in separate labelled context managers using `profiler.record_function("label")`. 
+You can modify it manually in the code such as `model.py` and `conformer.py`. 
 
 The labels we use include
 * "rnnt_encoder" -> transducer encoder, i.e., the Conformer model 

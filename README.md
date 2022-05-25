@@ -1,5 +1,5 @@
 # Introduction
-This repo aims to compare relative contribution of different modules of the Conformer model to the taining time. It is modified from Kuang Fangjun's repo https://github.com/csukuangfj/transducer-loss-benchmarking. 
+This repo aims to compare relative contribution of different modules of the Conformer model to the training time. It is modified from Kuang Fangjun's repo https://github.com/csukuangfj/transducer-loss-benchmarking. 
 
 The experiments are based on the icefall recipe `pruned_transducer_stateless2` 
 (https://github.com/k2-fsa/icefall/tree/master/egs/librispeech/ASR/pruned_transducer_stateless2).

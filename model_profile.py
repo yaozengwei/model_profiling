@@ -155,8 +155,8 @@ def main():
         on_trace_ready=torch.profiler.tensorboard_trace_handler(
             f"./log/conformer-k2-pruned-{suffix}"
         ),
-        record_shapes=False,
-        with_stack=False,
+        record_shapes=True,
+        with_stack=True,
         profile_memory=True,
     )
 
@@ -183,9 +183,7 @@ def main():
         loss = 0.5 * simple_loss + pruned_loss
         assert loss.requires_grad is True
 
-        with record_function("loss-backward"):
-            loss.backward()
-
+        loss.backward()
         model.zero_grad()
 
         if i > 80:

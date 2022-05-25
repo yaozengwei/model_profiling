@@ -84,9 +84,10 @@ class Transducer(nn.Module):
           x_lens:
             A 1-D tensor of shape (N,). It contains the number of frames in `x`
             before padding.
-          y:
-            A ragged tensor with 2 axes [utt][label]. It contains labels of each
-            utterance.
+          targets:
+            A 2-D tensor of shape (N, U). It contains the labels for utterances.
+          target_lengths:
+            A 1-D tensor of shape (N,). It contains the number of tokens in `targets`.
           prune_range:
             The prune range for rnnt loss, it means how many symbols(context)
             we are considering for each frame to compute the loss.
@@ -96,9 +97,6 @@ class Transducer(nn.Module):
           lm_scale:
             The scale to smooth the loss with lm (output of predictor network)
             part
-          warmup:
-            A value warmup >= 0 that determines which modules are active, values
-            warmup > 1 "are fully warmed up" and all modules will be active.
         Returns:
           Return the transducer loss.
 
@@ -111,13 +109,13 @@ class Transducer(nn.Module):
         assert x.size(0) == x_lens.size(0) == targets.size(0) == target_lengths.size(0)
         blank_id = self.decoder.blank_id
 
-        with record_function("model-encoder"):
+        with record_function("rnnt_encoder"):
             encoder_out, encoder_out_lengths = self.encoder(x, x_lens)
         assert torch.all(encoder_out_lengths > 0)
 
         # [B, 1 + S]
         decoder_in = nn.functional.pad(targets, (1, 0))
-        with record_function("model-decoder"):
+        with record_function("rnnt_decoder"):
             # decoder_out: [B, S + 1, decoder_dim]
             decoder_out = self.decoder(decoder_in)
 
@@ -126,7 +124,7 @@ class Transducer(nn.Module):
             [begin, begin, target_lengths, encoder_out_lengths], dim=1
         )
 
-        with record_function("loss-k2_rnnt_loss_smoothed"):
+        with record_function("rnnt_loss_simple"):
             lm = self.simple_lm_proj(decoder_out)
             am = self.simple_am_proj(encoder_out)
             with torch.cuda.amp.autocast(enabled=False):
@@ -142,7 +140,7 @@ class Transducer(nn.Module):
                     return_grad=True,
                 )
 
-        with record_function("loss-k2_rnnt_loss_pruned"):
+        with record_function("rnnt_loss_pruned"):
             # ranges : [B, T, prune_range]
             ranges = k2.get_rnnt_prune_ranges(
                 px_grad=px_grad,

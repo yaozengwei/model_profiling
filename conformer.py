@@ -109,7 +109,7 @@ class Conformer(EncoderInterface):
             - lengths, a tensor of shape (batch_size,) containing the number
               of frames in `embeddings` before padding.
         """
-        with record_function("encoder_embed"):
+        with record_function("rnnt_encoder_embed"):
             x = self.encoder_embed(x)
         x, pos_emb = self.encoder_pos(x)
         x = x.permute(1, 0, 2)  # (N, T, C) -> (T, N, C)
@@ -203,7 +203,6 @@ class ConformerEncoderLayer(nn.Module):
         src_mask: Optional[Tensor] = None,
         src_key_padding_mask: Optional[Tensor] = None,
         warmup: float = 1.0,
-        layer_idx: int = 0,
     ) -> Tensor:
         """
         Pass the input through the encoder layer.
@@ -215,7 +214,6 @@ class ConformerEncoderLayer(nn.Module):
             src_key_padding_mask: the mask for the src keys per batch (optional).
             warmup: controls selective bypass of of layers; if < 1.0, we will
               bypass layers more frequently.
-            layer_idx: layer index for profiler record.
 
         Shape:
             src: (S, N, E).
@@ -238,15 +236,12 @@ class ConformerEncoderLayer(nn.Module):
         else:
             alpha = 1.0
 
-        # prefix = f"layer-{layer_idx}_"
-        prefix = ""
-
-        with record_function(prefix + "module-feed_forward_macaron"):
+        with record_function("rnnt_encoder_layer_feed_forward_macaron"):
             # macaron style feed forward module
             src_ffn_macaron = self.feed_forward_macaron(src)
         src = src + self.dropout(src_ffn_macaron)
 
-        with record_function(prefix + "module-self_attn"):
+        with record_function("rnnt_encoder_layer_self_attn"):
             # multi-headed self-attention module
             src_att = self.self_attn(
                 src,
@@ -258,12 +253,12 @@ class ConformerEncoderLayer(nn.Module):
             )[0]
         src = src + self.dropout(src_att)
 
-        with record_function(prefix + "module-conv_module"):
+        with record_function("rnnt_encoder_layer_conv"):
             # convolution module
             src_conv = self.conv_module(src)
         src = src + self.dropout(src_conv)
 
-        with record_function(prefix + "module-feed_forward"):
+        with record_function("rnnt_encoder_layer_feed_forward"):
             # feed forward module
             src_ffn = self.feed_forward(src)
         src = src + self.dropout(src_ffn)
@@ -325,14 +320,13 @@ class ConformerEncoder(nn.Module):
         output = src
 
         for i, mod in enumerate(self.layers):
-            with record_function(f"encoder-layer-{i}"):
+            with record_function("rnnt_encoder_layer"):
                 output = mod(
                     output,
                     pos_emb,
                     src_mask=mask,
                     src_key_padding_mask=src_key_padding_mask,
                     warmup=warmup,
-                    layer_idx=i,
                 )
 
         return output

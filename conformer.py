@@ -33,7 +33,7 @@ from scaling import (
 from torch import Tensor, nn
 from torch.profiler import record_function
 
-from icefall.utils import make_pad_mask
+from utils import make_pad_mask
 
 
 class Conformer(EncoderInterface):

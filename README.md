@@ -1,7 +1,5 @@
 # Introduction
-This repo is modified from Fangjun's repo transducer-loss-benchmarking(https://github.com/csukuangfj/transducer-loss-benchmarking).
-
-It aims to compare relative contribution of different modules of the Conformer model to the taining time.
+This repo aims to compare relative contribution of different modules of the Conformer model to the taining time. It is modified from Kuang Fangjun's repo https://github.com/csukuangfj/transducer-loss-benchmarking. 
 
 The experiments are based on the icefall recipe `pruned_transducer_stateless2` 
 (https://github.com/k2-fsa/icefall/tree/master/egs/librispeech/ASR/pruned_transducer_stateless2).
@@ -35,11 +33,10 @@ Hint: We have saved the generated file ./shape_info.pt in this repo so you don't
 
 ## Step 2: Run model profiling code
 
-You can run the command 
+You can run the following command and get results in `log/conformer-k2-pruned-max-frames-30000` and `conformer-k2-pruned-max-frames-30000.txt`.
 ```
 python model_profile.py --sort-utterance True
 ```
-and get results in `log/conformer-k2-pruned-max-frames-30000` and `conformer-k2-pruned-max-frames-30000.txt`.
 
 Note: We use the following config for model profiling in `model_profile.py`:
 ```
@@ -53,7 +50,7 @@ prof = torch.profiler.profile(
     with_stack=True,
     profile_memory=True,
 )
- ```
+```
 In this experiment with wait=10, warmup=10, active=20, repeat=2, pytorch profiler will skip the first 10 iterations, 
 start warming up for 10 iterations, record the following 20 iterations. In total, the cycle repeats twice.
 
@@ -76,7 +73,7 @@ The labels we use include
 
 The summarized result is in `conformer-k2-pruned-max-frames-30000.txt`. 
 
-You can run the following command to filter out the result we recorded (beginning with rnnt) and save it to `conformer-k2-pruned-max-frames-30000-filtered.txt`. 
+You can run the following command to filter out the result we recorded (beginning with "rnnt") and save it to `conformer-k2-pruned-max-frames-30000-filtered.txt`. 
 
 ```
 head conformer-k2-pruned-max-frames-30000.txt -n 3 > conformer-k2-pruned-max-frames-30000-filtered.txt 

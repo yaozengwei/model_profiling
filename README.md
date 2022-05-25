@@ -74,17 +74,23 @@ The labels we use include
 
 ### Step 3: Visualize Results
 
-The summarized result is in `conformer-k2-pruned-max-frames-30000.txt`. You can run the following command to filter out the result we recorded and save it to `conformer-k2-pruned-max-frames-30000-filtered.txt`. 
+The summarized result is in `conformer-k2-pruned-max-frames-30000.txt`. 
+
+You can run the following command to filter out the result we recorded (beginning with rnnt) and save it to `conformer-k2-pruned-max-frames-30000-filtered.txt`. 
 
 ```
 head conformer-k2-pruned-max-frames-30000.txt -n 3 > conformer-k2-pruned-max-frames-30000-filtered.txt 
 grep -E 'rnnt' conformer-k2-pruned-max-frames-30000.txt >> conformer-k2-pruned-max-frames-30000-filtered.txt
 ```
 
+The filtered result is as follows, in which some columns are omitted. 
+![image](./record.png)
+
 You can use tensorboard to visualize the result. For example, run
 ```
 tensorboard --logdir log/conformer-k2-pruned-max-frames-30000/ --port 16203 
 ```
 ![image](./tensorboard_1.png)
-You can compare the operation we recorded following the instructions in the figure:
+
+You can compare the operations we recorded following the instructions in the figure:
 ![image](./tensorboard_2.png)
